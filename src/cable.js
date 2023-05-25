@@ -8,6 +8,7 @@ export default class Cable {
   _channels = { subscriptions: {} };
   _contexts = {};
   _connectionUrl = null;
+  _jwt = null;
   _isReset = false;
 
   /**
@@ -15,6 +16,7 @@ export default class Cable {
    * @param {Object} Vue
    * @param {Object} options - ActionCableVue options
    * @param {string|Function|null} [options.connectionUrl=null] - ActionCable server websocket URL
+   * @param {string|Function|null} [options.jwt=null] - The jwt token to be used for authentication.
    * @param {boolean} options.debug - Enable logging for debug
    * @param {string} options.debugLevel - Debug level required for logging. Either `info`, `error`, or `all`
    * @param {boolean} options.connectImmediately - Connect immediately or wait until the first subscription
@@ -31,7 +33,7 @@ export default class Cable {
 
     Vue.mixin(Mixin);
 
-    let { debug, debugLevel, connectionUrl, connectImmediately, store } =
+    let { debug, debugLevel, connectionUrl, connectImmediately, store, jwt } =
       options || {
         debug: false,
         debugLevel: "error",
@@ -40,6 +42,7 @@ export default class Cable {
       };
 
     this._connectionUrl = connectionUrl;
+    this._jwt = jwt;
     if (connectImmediately !== false) connectImmediately = true;
 
     if (store) {
@@ -48,7 +51,7 @@ export default class Cable {
 
     this._logger = new Logger(debug, debugLevel);
 
-    if (connectImmediately) this._connect(this._connectionUrl);
+    if (connectImmediately) this._connect(this._connectionUrl, this._jwt);
 
     this._attachConnectionObject();
   }
@@ -80,7 +83,7 @@ export default class Cable {
           },
         });
     } else {
-      this._connect(this._connectionUrl);
+      this._connect(this._connectionUrl, this._jwt);
       this.subscribe(subscription, name);
     }
   }
@@ -180,13 +183,13 @@ export default class Cable {
   /**
    * Connects to an Action Cable server
    * @param {string|Function|null} url - The websocket URL of the Action Cable server.
+   * @param {string|Function|null} jwt - The jwt token to be used for authentication.
    */
-  _connect(url) {
-    if (typeof url === "function") {
-      this._cable = createConsumer(url());
-    } else {
-      this._cable = createConsumer(url);
-    }
+  _connect(url, jwt) {
+    const finalUrl = typeof url === "function" ? url() : url;
+    const finalJwt = typeof jwt === "function" ? jwt() : jwt;
+
+    this._cable = createConsumer(finalUrl, finalJwt);
   }
 
   _attachConnectionObject() {
@@ -194,14 +197,16 @@ export default class Cable {
       /**
        * Manually connect to an Action Cable server. Automatically re-subscribes all your subscriptions.
        * @param {String|Function|null} [url=null] - Optional parameter. The connection URL to your Action Cable server
+       * @param {String|Function|null} [jwt=null] - Optional parameter. The jwt token to be used for authentication.
        */
-      connect: (url = null) => {
+      connect: (url = null, jwt = null) => {
         if (url) this._connectionUrl = url;
+        if (jwt) this._jwt = jwt;
 
         if (this._cable) {
           this._cable.connect();
         } else {
-          this._connect(url || this._connectionUrl);
+          this._connect(url || this._connectionUrl, jwt || this._jwt);
         }
 
         if (this._isReset) {
