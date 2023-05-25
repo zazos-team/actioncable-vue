@@ -1,4 +1,4 @@
-import { createConsumer } from "@rails/actioncable";
+import { createConsumer } from "actioncable-jwt";
 import Logger from "./logger";
 import Mixin from "./mixin";
 
