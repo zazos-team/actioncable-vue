@@ -18,7 +18,7 @@ declare module "vue/types/vue" {
       connected: boolean;
       disconnected: boolean;
       connection?: {
-        connect: (url?: string | (() => string) | null) => void;
+        connect: (url?: string | (() => string) | null, jwt?: string | (() => string) | null) => void;
         disconnect: () => void;
       };
     };
