@@ -1075,11 +1075,6 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@rails/actioncable@^6.0.2":
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/@rails/actioncable/-/actioncable-6.1.0.tgz#f336f25450b1bc43b99bc60557a70b6e6bb1d3d2"
-  integrity sha512-eDgy+vcKN9RIzxmMBfSAe77rTj2cp6kJALiVQyKrW2O9EK2MdostOmP+99At/Dit3ur5+77NVnruxD7y14ZYFA==
-
 "@sinonjs/commons@^1.7.0":
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/@sinonjs/commons/-/commons-1.8.1.tgz#e7df00f98a203324f6dc7cc606cad9d4a8ab2217"
@@ -1522,6 +1517,11 @@ acorn@^7.1.0, acorn@^7.1.1, acorn@^7.4.0:
   version "7.4.1"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-7.4.1.tgz#feaed255973d2e77555b83dbc08851a6c63520fa"
   integrity sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==
+
+actioncable-jwt@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/actioncable-jwt/-/actioncable-jwt-1.1.0.tgz#fbcf7d27b3ee5fa3090474b81e21ed843a1b152a"
+  integrity sha512-WPD8RQ5pYazWpesx2G5eRjAFKZrihF5PZzcuNPHLbeRimL0BVHayv7jwyEYO8QVAhgaTVgNC+hEnfqUq5EVAEA==
 
 aggregate-error@^3.0.0:
   version "3.1.0"
