@@ -1,6 +1,7 @@
 import { createConsumer } from "actioncable-jwt";
 import Logger from "./logger";
 import Mixin from "./mixin";
+import { getCurrentInstance } from 'vue'
 
 export default class Cable {
   _logger = null;
@@ -10,6 +11,7 @@ export default class Cable {
   _connectionUrl = null;
   _jwt = null;
   _isReset = false;
+  _VUE_VERSION = null;
 
   /**
    * ActionCableVue $cable entry point
@@ -23,9 +25,9 @@ export default class Cable {
    * @param {object} options.store - Vuex store
    */
   constructor(Vue, options) {
-    const VERSION = Number(Vue.version.split(".")[0]);
+    this._VUE_VERSION = Number(Vue.version.split(".")[0]);
 
-    if (VERSION === 3) {
+    if (this._VUE_VERSION === 3) {
       Vue.config.globalProperties.$cable = this;
     } else {
       Vue.prototype.$cable = this;
@@ -233,15 +235,17 @@ export default class Cable {
    * @param {Object} context - The execution context of the component the channel was created in
    */
   _addChannel(name, value, context) {
-    value._uid = context._uid;
+    value._uid = this._componentUid(context);
     value._name = name;
 
     if (!this._channels[name]) this._channels[name] = [];
     this._addContext(context);
 
     if (
-      !this._channels[name].find((c) => c._uid === context._uid) &&
-      this._contexts[context._uid]
+      !this._channels[name].find(
+        (c) => c._uid === this._componentUid(context),
+      ) &&
+      this._contexts[this._componentUid(context)]
     ) {
       this._channels[name].push(value);
     }
@@ -252,7 +256,7 @@ export default class Cable {
    * @param {Object} context - The Vue component execution context being added
    */
   _addContext(context) {
-    this._contexts[context._uid] = { context };
+    this._contexts[this._componentUid(context)] = { context };
   }
 
   /**
@@ -309,5 +313,15 @@ export default class Cable {
       const component = this._contexts[key]?.context;
       component?.$resubscribeToCableChannels?.();
     });
+  }
+
+  /**
+   * Returns the Vue component's unique identifier
+   * @param {Object} context - The Vue component execution context
+   */
+  _componentUid(context) {
+    return this._VUE_VERSION === 3
+      ? context.$.uid || getCurrentInstance().uid
+      : context._uid;
   }
 }

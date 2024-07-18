@@ -41,6 +41,9 @@ describe("Cable", () => {
     global._addContext = function (context) {
       cable._addContext.call(global, context);
     };
+    global._componentUid = function (context) {
+      return cable._componentUid.call(global, context);
+    };
     global._connect = jest.fn();
     global.subscribe = jest.fn();
   });
